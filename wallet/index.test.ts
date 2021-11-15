@@ -1,21 +1,21 @@
-const { isTaggedTemplateExpression } = require("@babel/types");
-const Wallet = require("./index");
-const TransactionPool = require("./transaction-pool");
+import { Wallet } from ".";
+import { Transaction } from "./transaction";
+import { TransactionPool } from "./transaction-pool";
 
 describe('Wallet', () => {
-  let wallet, transactionPool;
+  let wallet: Wallet, transactionPool: TransactionPool;
   beforeEach(() => {
       wallet = new Wallet();
       transactionPool = new TransactionPool();
   });
 
   describe('creating a transaction', () => {
-      let transaction, sendAmount, recipient;
+      let transaction: Transaction, sendAmount: number, recipient: string;
 
       beforeEach(()=> {
           sendAmount = 50;
           recipient = 'test-recipient-address';
-          transaction = wallet.createTransaction(recipient, sendAmount, transactionPool);
+          transaction = <Transaction>wallet.createTransaction(recipient, sendAmount, transactionPool);
       });
 
       describe(() => 'and doing the same transaction', () => {

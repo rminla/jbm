@@ -1,8 +1,8 @@
-const Block = require('./block');
+import { Block } from "./block";
 
 describe('Block', () => {
 
-    let data, lastBlock, block;
+    let data: string, lastBlock: Block, block: Block;
     
     beforeEach(() => {
         data = 'bar';

@@ -1,15 +1,15 @@
-const Transaction = require('./transaction');
-const Wallet = require('./index');
+import { Wallet } from ".";
+import { Transaction } from "./transaction";
 
 describe('Transaction', () => {
 
-    let transaction, wallet, recipient, amount;
+    let transaction: Transaction, wallet: Wallet, recipient: string, amount: number;
 
     beforeEach(() => {
         wallet = new Wallet();
         amount = 50;
         recipient = 'TestAddress';
-        transaction = Transaction.newTransaction(wallet, recipient, amount);
+        transaction = <Transaction>Transaction.newTransaction(wallet, recipient, amount);
     });
 
     it('Outputs the `amount` subtracted from the sender\'s wallet balance', () => {
@@ -36,7 +36,7 @@ describe('Transaction', () => {
     describe('Transaction with `amount` that exceeds wallet balance', () => {
         beforeEach(() => {
             amount = 50000;
-            transaction = Transaction.newTransaction(wallet, recipient, amount);
+            transaction = <Transaction>Transaction.newTransaction(wallet, recipient, amount);
         });
 
         it('Does not create a `transaction`', () => {
@@ -45,11 +45,11 @@ describe('Transaction', () => {
     });
 
     describe('updating a transaction', () => {
-        let nextAmount, nextRecipient;
+        let nextAmount: number, nextRecipient: string;
         beforeEach(() => {
             nextAmount = 20;
             nextRecipient = 'testRecipientAddress';
-            transaction = transaction.update(wallet, nextRecipient, nextAmount);
+            transaction = <Transaction>transaction.update(wallet, nextRecipient, nextAmount);
         });
 
         it('subtracts an additional amount from the sender\'s output', () => {
