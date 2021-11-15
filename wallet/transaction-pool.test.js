@@ -1,4 +1,3 @@
-const Transaction = require('./transaction');
 const TransactionPool = require('./transaction-pool');
 const Wallet = require('./index');
 

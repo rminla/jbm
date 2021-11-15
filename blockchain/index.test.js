@@ -1,7 +1,6 @@
 const Blockchain = require('./index');
 const Block = require('./block');
 
-
 describe('Blockchain', () => {
     let bc, bc2;
 

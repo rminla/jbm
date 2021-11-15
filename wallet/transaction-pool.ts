@@ -1,22 +1,24 @@
-const Transaction = require("./transaction");
+import { Transaction } from "./transaction";
 
-class TransactionPool {
+export class TransactionPool {
+
+    transactions: Transaction[];
     
     constructor() {
         this.transactions = [];
     }
 
-    updateOrAddTransaction(transaction) {
-        let oldTransaction = this.transactions.find(t=>t.id===transaction.id); 
+    updateOrAddTransaction(transaction: Transaction) {
+        let oldTransaction : Transaction | undefined = this.transactions.find(t=>t.id===transaction.id); 
         if (oldTransaction) {
-            this.transactions[this.transactions.indexOf[oldTransaction]] = transaction;
+            this.transactions[this.transactions.indexOf(oldTransaction)] = transaction;
         } else {
             this.transactions.push(transaction);
         }
     }
 
-    getTransaction(address) {
-        return this.transactions.find(t=>t.address === address);
+    getTransaction(address: string) {
+        return this.transactions.find(t=>t.input.address === address);
     }
 
     getValidTransactions() {
@@ -41,4 +43,4 @@ class TransactionPool {
         });
     }
 }
-module.exports = TransactionPool;
+// module.exports = TransactionPool;
