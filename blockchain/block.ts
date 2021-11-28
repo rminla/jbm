@@ -1,4 +1,4 @@
-import { ChainUtil } from "../chain-util";
+import { Util } from "../util/util";
 import { DIFFICULTY, MINE_RATE } from "../config";
 
 export class Block {
@@ -28,7 +28,8 @@ export class Block {
             Data:        ${this.data}`;
     }
 
-    static genesis() {
+    //TODO: add equivalent of "pszTimestamp" to prove blockchain start
+    static createGenesis() {
         return new this(0, '-----', 'first-hash', [], 0, DIFFICULTY);
     }
 
@@ -39,12 +40,12 @@ export class Block {
         let { difficulty } = lastBlock;
 
         let nonce = 0;
-        let hash = ChainUtil.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
+        let hash = Util.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
         while (hash.substring(0, difficulty) !== '0'.repeat(difficulty)) {
             nonce++;
             timestamp = Date.now();
             difficulty = Block.adjustDifficulty(lastBlock, timestamp);
-            hash = ChainUtil.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
+            hash = Util.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
             //console.log(`Current hash: ${hash}`);
         }
         //console.log(`WINNING hash: ${hash}`);
@@ -54,9 +55,13 @@ export class Block {
 
     static blockHash(block : Block) {
         const { timestamp, lastHash, data, nonce, difficulty } = block;
-        return ChainUtil.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
+        return Util.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
     }
 
+
+    //note that in the real Bitcoin source code, this is done every two weeks, not every block
+    //see CMainParams.consensus.nPowTargetTimespan and CMainParams.consensus.nPowTargetSpacing
+    //in bitcoin sourcecode 
     static adjustDifficulty(lastBlock : Block, currentTime : number) {
         let { difficulty } = lastBlock;
         difficulty = lastBlock.timestamp + MINE_RATE > currentTime ? difficulty + 1 : difficulty - 1;

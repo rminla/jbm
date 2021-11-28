@@ -7,11 +7,12 @@ export declare class Transaction {
     constructor();
     update(senderWallet: Wallet, recipientAddress: string, amount: number): this | undefined;
     static newTransaction(senderWallet: Wallet, recipientAddress: string, amount: number): Transaction | undefined;
-    static signTransaction(transaction: Transaction, senderWallet: {
-        balance: any;
-        publicKey: any;
-        sign: (arg0: any) => any;
-    }): void;
-    static verifyTransaction(transaction: Transaction): any;
+    static signTransaction(transaction: Transaction, senderWallet: Wallet): void;
+    static verifyTransaction(transaction: Transaction): boolean;
     hasAddress(address: any): boolean;
+    static createRewardTransaction(recipientAddress: string): Transaction;
+    static transactionWithOutputs(senderWallet: Wallet, outputs: {
+        amount: number;
+        address: string;
+    }[]): Transaction;
 }

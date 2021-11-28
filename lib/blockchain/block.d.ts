@@ -7,8 +7,8 @@ export declare class Block {
     difficulty: number;
     constructor(timestamp: number, lastHash: string, hash: string, data: any, nonce: number, difficulty: number);
     toString(): string;
-    static genesis(): Block;
+    static createGenesis(): Block;
     static mineBlock(lastBlock: Block, data: string): Block;
-    static blockHash(block: Block): any;
+    static blockHash(block: Block): string;
     static adjustDifficulty(lastBlock: Block, currentTime: number): number;
 }

@@ -1,5 +1,5 @@
-import { ChainUtil } from "../chain-util";
-import { INITIAL_BALANCE } from "../config";
+import { Util } from "../util";
+import { BLOCKCHAIN_WALLET_ADDRESS, INITIAL_BALANCE } from "../config";
 import { Transaction } from "./transaction";
 import { TransactionPool } from "./transaction-pool";
 
@@ -10,7 +10,7 @@ export class Wallet {
 
     constructor() {
         this.balance = INITIAL_BALANCE;
-        this.keyPair = ChainUtil.getKeyPair();
+        this.keyPair = Util.getKeyPair();
         this.publicKey = this.keyPair.getPublic().encode('hex');
     }
 
@@ -40,7 +40,12 @@ export class Wallet {
             }
         }
     }
-
+    
+    static blockchainWallet() {     //TODO: FIX THIS.  NEED A WAY TO STORE THE BLOCKCHAIN WALLET KEYS BETWEEN SESSIONS
+        const blockchainWallet = new this();
+        // blockchainWallet.publicKey = BLOCKCHAIN_WALLET_ADDRESS;
+        return blockchainWallet;
+    }
 }
 
 // module.exports = Wallet;

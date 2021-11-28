@@ -4,5 +4,5 @@ export declare class TransactionPool {
     constructor();
     updateOrAddTransaction(transaction: Transaction): void;
     getTransaction(address: string): Transaction | undefined;
-    getValidTransactions(): void;
+    getValidTransactions(): Transaction[];
 }

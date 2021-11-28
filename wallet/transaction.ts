@@ -1,7 +1,6 @@
-// const ChainUtil = require('../chain-util');
-
 import { Wallet } from ".";
-import { ChainUtil } from "../chain-util";
+import { MINING_REWARD } from "../config";
+import { Util } from "../util/util";
 
 const TRANSACTION_TYPE = {
     valid: 'VALID',
@@ -16,7 +15,7 @@ export class Transaction {
 
 
     constructor() {
-        this.id = ChainUtil.newId();
+        this.id = Util.newId();
         this.input = null;
         this.outputs = [];
         this.transactionType = TRANSACTION_TYPE.invalid;
@@ -41,37 +40,47 @@ export class Transaction {
     }
 
     static newTransaction(senderWallet: Wallet, recipientAddress: string, amount: number) {
-        const transaction = new this();
         if (amount > senderWallet.balance) {
             console.log(`Amount: ${amount} exceeds balance `);
             return;
         }
-        transaction.outputs.push(...[
-            { amount: senderWallet.balance - amount, address: senderWallet.publicKey },
-            { amount, address: recipientAddress }]);
-        Transaction.signTransaction(transaction, senderWallet);
-        return transaction;
+        
+        return Transaction.transactionWithOutputs(senderWallet, [
+                 { amount: senderWallet.balance - amount, address: senderWallet.publicKey },
+                 { amount, address: recipientAddress }
+                ]);
     }
 
-    static signTransaction(transaction: Transaction, senderWallet: { balance: any; publicKey: any; sign: (arg0: any) => any; }) {
+    static signTransaction(transaction: Transaction, senderWallet: Wallet) {
         transaction.input = {
             timestamp: Date.now(),
             amount: senderWallet.balance,
             address: senderWallet.publicKey,
-            signature: senderWallet.sign(ChainUtil.hash(transaction.outputs))
+            signature: senderWallet.sign(Util.hash(transaction.outputs))
         };
     }
 
     static verifyTransaction(transaction: Transaction) {
-        return ChainUtil.verifySignature(transaction.input.address,
+        return Util.verifySignature(transaction.input.address,
             transaction.input.signature,
-            ChainUtil.hash(transaction.outputs));
+            Util.hash(transaction.outputs));
     }
 
     hasAddress(address: any) {
         return this.input.address === address;
     }
 
-}
+    //TODO: Add COINBASE_MATURITY to prevent double-spend for orphaned chains (consensus.h in bitcoin source)
+    //ALSO: reward transaction should be called "CoinbaseTransaction" and that's a transaction with a single output (going to the miner)
+    static createRewardTransaction(recipientAddress: string) {
+        return Transaction.transactionWithOutputs(Wallet.blockchainWallet(), [{amount: MINING_REWARD, address: recipientAddress}])
+    }
 
-// module.exports = Transaction;
+    static transactionWithOutputs(senderWallet: Wallet, outputs: { amount: number; address: string; }[]) {
+        const transaction = new this();
+        transaction.outputs.push(...outputs);
+        Transaction.signTransaction(transaction, senderWallet);
+        return transaction;
+    }
+
+}

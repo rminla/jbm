@@ -37,6 +37,10 @@ app.get('/transaction', (req: any, res: { json: (arg0: any) => void; }) => {
     res.json(transactionPool.transactions);
 });
 
+app.get('/transaction/valid', (req: any, res: { json: (arg0: any) => void; }) => {
+    res.json(transactionPool.getValidTransactions());
+});
+
 app.post('/transaction', (req: { body: { recipient: any; amount: any; }; }, res: { redirect: (arg0: string) => void; }) => {
     const { recipient, amount } = req.body;
     const transaction = wallet.createTransaction(recipient, amount, transactionPool);

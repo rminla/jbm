@@ -22,10 +22,11 @@ export class TransactionPool {
     }
 
     getValidTransactions() {
-        this.transactions.filter(t => {
+
+        return this.transactions.filter(t => {
             
             const outputTotal = t.outputs.reduce((total, output) => {
-                total + output.amount
+                return total + output.amount;
             }, 0);
             
             if (t.input.amount !== outputTotal) {
@@ -41,6 +42,6 @@ export class TransactionPool {
             return t;
 
         });
+
     }
 }
-// module.exports = TransactionPool;

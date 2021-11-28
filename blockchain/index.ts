@@ -3,7 +3,7 @@ import { Block } from "./block";
 export class Blockchain {
     chain: Block[];
     constructor() {
-        this.chain = [Block.genesis()];
+        this.chain = [Block.createGenesis()];
     }
 
     addBlock(data: string) {
@@ -14,7 +14,7 @@ export class Blockchain {
 
     isValidChain(chain: Block[]) {
 
-        if (JSON.stringify(chain[0]) !== JSON.stringify(Block.genesis())) {
+        if (JSON.stringify(chain[0]) !== JSON.stringify(Block.createGenesis())) {
             //console.log(`Bad genesis block in new chain: 
             //            ${chain[0].toString()}`);
             return false;

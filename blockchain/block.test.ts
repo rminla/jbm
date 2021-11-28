@@ -6,7 +6,7 @@ describe('Block', () => {
     
     beforeEach(() => {
         data = 'bar';
-        lastBlock = Block.genesis();
+        lastBlock = Block.createGenesis();
         block = Block.mineBlock(lastBlock, data);
     });
     

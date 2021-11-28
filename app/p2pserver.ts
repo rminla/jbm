@@ -28,6 +28,7 @@ export class P2pServer {
         console.log(`Listening for peer-to-peer connections on port: ${P2P_PORT}`);
     }
 
+    //TODO: add concept of seed nodes
     connectToPeers() {
         peers.forEach(peer => {
             const socket = new WS.WebSocket(peer);
