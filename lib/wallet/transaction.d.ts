@@ -1,8 +1,8 @@
 import { Wallet } from ".";
 export declare class Transaction {
     id: string;
-    input: any;
-    outputs: any[];
+    input: Input | null;
+    outputs: Output[];
     transactionType: string;
     constructor();
     update(senderWallet: Wallet, recipientAddress: string, amount: number): this | undefined;
@@ -16,3 +16,16 @@ export declare class Transaction {
         address: string;
     }[]): Transaction;
 }
+declare class Output {
+    amount: number;
+    address: string;
+    constructor(amount: number, address: string);
+}
+declare class Input {
+    timestamp: number;
+    amount: number;
+    address: string;
+    signature: string;
+    constructor(timestamp: number, amount: number, address: string, signature: string);
+}
+export {};

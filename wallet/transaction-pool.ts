@@ -18,7 +18,7 @@ export class TransactionPool {
     }
 
     getTransaction(address: string) {
-        return this.transactions.find(t=>t.input.address === address);
+        return this.transactions.find(t=>t.input?.address === address);
     }
 
     getValidTransactions() {
@@ -29,8 +29,8 @@ export class TransactionPool {
                 return total + output.amount;
             }, 0);
             
-            if (t.input.amount !== outputTotal) {
-                console.log(`Invalid transaction from ${t.input.address}`);
+            if (t.input?.amount !== outputTotal) {
+                console.log(`Invalid transaction from ${t.input?.address}`);
                 return;
             }
 
@@ -43,5 +43,9 @@ export class TransactionPool {
 
         });
 
+    }
+
+    clear() {
+        this.transactions = [];
     }
 }

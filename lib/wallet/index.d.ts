@@ -8,5 +8,5 @@ export declare class Wallet {
     toString(): string;
     sign(dataHash: string): any;
     createTransaction(recipient: string, amount: number, transactionPool: TransactionPool): Transaction | undefined;
-    static blockchainWallet(): Wallet;
+    static getBlockchainWallet(): Wallet;
 }

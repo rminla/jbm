@@ -1,18 +1,19 @@
-const P2pServer = require('./p2pserver');
+import { BlockchainNode } from '../server/blockchainnode';
 import { Blockchain } from "../blockchain";
+import { Transaction } from "../wallet/transaction";
 import { TransactionPool } from "../wallet/transaction-pool";
 export class Miner {
 
     blockchain: Blockchain;
     transactionPool: TransactionPool;
     wallet: any;
-    p2pServer: InstanceType<typeof P2pServer>;
+    node: BlockchainNode;
     
-    constructor(blockchain: Blockchain, transactionPool: TransactionPool, wallet: any, p2pServer: InstanceType<typeof P2pServer>) {
+    constructor(blockchain: Blockchain, transactionPool: TransactionPool, wallet: any, node: BlockchainNode) {
         this.blockchain = blockchain;
         this.transactionPool = transactionPool;
         this.wallet = wallet;
-        this.p2pServer = p2pServer;
+        this.node = node;
     } 
 
     mine() {
@@ -20,16 +21,21 @@ export class Miner {
         const validTransactions = this.transactionPool.getValidTransactions();
         
         //include a reward for the miner
+        validTransactions.push(Transaction.createRewardTransaction(this.wallet));
 
         //add a block of valid transactions
+        const block = this.blockchain.addBlock(JSON.stringify(validTransactions));
 
         //send block to other nodes (sync chains)
+        this.node.syncChains();
 
         //clear the transaction pool 
+        this.transactionPool.clear();
         
-        //broadcase transaction pool clear
+        //broadcast transaction pool clear
+        this.node.broadcastClearTransactions();
+
+        return block;
 
     }
 }
-
-// module.exports = Miner;

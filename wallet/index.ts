@@ -41,11 +41,9 @@ export class Wallet {
         }
     }
     
-    static blockchainWallet() {     //TODO: FIX THIS.  NEED A WAY TO STORE THE BLOCKCHAIN WALLET KEYS BETWEEN SESSIONS
+    static getBlockchainWallet() {     //TODO: FIX THIS.  NEED A WAY TO STORE THE BLOCKCHAIN WALLET KEYS BETWEEN SESSIONS
         const blockchainWallet = new this();
         // blockchainWallet.publicKey = BLOCKCHAIN_WALLET_ADDRESS;
         return blockchainWallet;
     }
 }
-
-// module.exports = Wallet;

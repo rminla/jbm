@@ -25,13 +25,15 @@ describe('TransactionPool', () => {
 
     describe('mixing valid and corrupt transactions', () => {
         let validTransactions: Transaction[];
-        beforeEach(()=> {
-            validTransactions = [...tp.transactions]; 
-            for (let i=0; i<6;i++) {
+        beforeEach(() => {
+            validTransactions = [...tp.transactions];
+            for (let i = 0; i < 6; i++) {
                 wallet = new Wallet();
                 transaction = <Transaction>wallet.createTransaction('TestAddress', 30, tp);
-                if (i%2==0) {
-                    transaction.input.amount = 99999;
+                if (i % 2 == 0) {
+                    if (transaction.input !== null) {
+                        transaction.input.amount = 99999;
+                    }
                 } else {
                     validTransactions.push(transaction);
                 }

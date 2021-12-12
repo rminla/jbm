@@ -1,16 +1,18 @@
-import { Blockchain } from "../blockchain";
-
 import WS from "ws";
+
+import { Blockchain } from "../blockchain";
 import { Transaction } from "../wallet/transaction";
 import { TransactionPool } from "../wallet/transaction-pool";
-const P2P_PORT : number | undefined = <number | undefined>process.env.P2P_PORT || 5001;
+
+const P2P_PORT: number | undefined = <number | undefined>process.env.P2P_PORT || 5001;
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 const MESSAGE_TYPES = {
     chain: 'CHAIN',
-    transaction: 'TRANSACTION'
+    transaction: 'TRANSACTION',
+    clearTransactions: 'CLEAR_TRANSACTIONS'
 }
 
-export class P2pServer {
+export class BlockchainNode {
     blockchain: Blockchain;
     transactionPool: TransactionPool;
     sockets: WS.WebSocket[];
@@ -36,40 +38,51 @@ export class P2pServer {
         });
     }
 
-    connectSocket(socket : WS.WebSocket) {
+    connectSocket(socket: WS.WebSocket) {
         this.sockets.push(socket);
         this.messageHandler(socket);
         this.sendChain(socket);
         console.log(`Socket connected: ${socket.url}`);
     }
 
-    messageHandler(socket : WS.WebSocket) {
+    messageHandler(socket: WS.WebSocket) {
         socket.on('message', (message: string) => {
             const data = JSON.parse(message);
             console.log(data);
-            switch(data.type) {
+            switch (data.type) {
                 case MESSAGE_TYPES.chain:
                     this.blockchain.replaceChain(data.chain);
                     break;
                 case MESSAGE_TYPES.transaction:
                     this.transactionPool.updateOrAddTransaction(data.transaction);
                     break;
+                case MESSAGE_TYPES.clearTransactions:
+                    this.transactionPool.clear();
+                    break;
             }
         })
     }
 
     sendChain(socket: WS.WebSocket) {
-        socket.send(JSON.stringify( { 
+        socket.send(JSON.stringify({
             type: MESSAGE_TYPES.chain,
             chain: this.blockchain
         }));
     }
 
     sendTransaction(socket: WS.WebSocket, transaction: Transaction) {
-        socket.send( 
+        socket.send(
             JSON.stringify({
                 type: MESSAGE_TYPES.transaction,
-                transaction:transaction
+                transaction: transaction
+            })
+        );
+    }
+
+    sendClearTransaction(socket: WS.WebSocket) {
+        socket.send(
+            JSON.stringify({
+                type: MESSAGE_TYPES.clearTransactions
             })
         );
     }
@@ -85,6 +98,10 @@ export class P2pServer {
             this.sendTransaction(socket, transaction);
         })
     }
-}
 
-// module.exports = P2pServer;
+    broadcastClearTransactions() {
+        this.sockets.forEach(socket => {
+            this.sendClearTransaction(socket);
+        })
+    }
+}

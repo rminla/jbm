@@ -1,4 +1,5 @@
 import { Wallet } from ".";
+import { MINING_REWARD } from "../config";
 import { Transaction } from "./transaction";
 
 describe('Transaction', () => {
@@ -13,15 +14,15 @@ describe('Transaction', () => {
     });
 
     it('Outputs the `amount` subtracted from the sender\'s wallet balance', () => {
-        expect(transaction.outputs.find(output => output.address === wallet.publicKey).amount).toEqual(wallet.balance - amount);
+        expect(transaction.outputs.find(output => output.address === wallet.publicKey)?.amount).toEqual(wallet.balance - amount);
     });
 
     it('Outputs the `amount` added to the recipient\'s wallet balance', () => {
-        expect(transaction.outputs.find(output => output.address === recipient).amount).toEqual(amount);
+        expect(transaction.outputs.find(output => output.address === recipient)?.amount).toEqual(amount);
     });
 
     it('Inputs the `balance` of the sender\'s wallet balance', () => {
-        expect(transaction.input.amount).toEqual(wallet.balance);
+        expect(transaction.input?.amount).toEqual(wallet.balance);
     });
 
     it('Validates a valid transaction', () => {
@@ -53,12 +54,22 @@ describe('Transaction', () => {
         });
 
         it('subtracts an additional amount from the sender\'s output', () => {
-            expect(transaction.outputs.find(output => output.address === wallet.publicKey).amount).toEqual(wallet.balance - amount - nextAmount);
+            expect(transaction.outputs.find(output => output.address === wallet.publicKey)?.amount).toEqual(wallet.balance - amount - nextAmount);
         })
 
         it('outputs an amount for the next recipient', () => {
-            expect(transaction.outputs.find(output => output.address === nextRecipient).amount).toEqual(nextAmount);
+            expect(transaction.outputs.find(output => output.address === nextRecipient)?.amount).toEqual(nextAmount);
         })
     });
+
+    describe('creating a reward transaction', () => {
+        beforeEach(() => {
+            transaction = Transaction.createRewardTransaction(wallet.publicKey);
+        });
+
+        it(`rewards the miner's wallet`, ()=> {
+            expect(transaction.outputs.find(output=> output.address === wallet.publicKey)?.amount).toEqual( MINING_REWARD);
+        })
+    })
 
 })

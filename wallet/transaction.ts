@@ -9,10 +9,9 @@ const TRANSACTION_TYPE = {
 
 export class Transaction {
     id: string;
-    input: any;
-    outputs: any[];
+    input: Input | null;
+    outputs: Output[];
     transactionType: string;
-
 
     constructor() {
         this.id = Util.newId();
@@ -25,6 +24,11 @@ export class Transaction {
 
         console.log(`Before Update: ${this.toString()}`);
         const senderOutput = this.outputs.find(output => output.address === senderWallet.publicKey);
+
+        if (senderOutput === undefined) {
+            console.log(`Cannot update transaction since sender output not found.`);
+            return;
+        }
 
         if (amount > senderOutput.amount) {
             console.log(`Cannot update transaction since amount ${amount} exceeds balance.`);
@@ -44,11 +48,11 @@ export class Transaction {
             console.log(`Amount: ${amount} exceeds balance `);
             return;
         }
-        
+
         return Transaction.transactionWithOutputs(senderWallet, [
-                 { amount: senderWallet.balance - amount, address: senderWallet.publicKey },
-                 { amount, address: recipientAddress }
-                ]);
+            { amount: senderWallet.balance - amount, address: senderWallet.publicKey },
+            { amount, address: recipientAddress }
+        ]);
     }
 
     static signTransaction(transaction: Transaction, senderWallet: Wallet) {
@@ -61,19 +65,19 @@ export class Transaction {
     }
 
     static verifyTransaction(transaction: Transaction) {
-        return Util.verifySignature(transaction.input.address,
-            transaction.input.signature,
+        return Util.verifySignature(transaction.input?.address,
+            transaction.input?.signature,
             Util.hash(transaction.outputs));
     }
 
     hasAddress(address: any) {
-        return this.input.address === address;
+        return this.input?.address === address;
     }
 
     //TODO: Add COINBASE_MATURITY to prevent double-spend for orphaned chains (consensus.h in bitcoin source)
     //ALSO: reward transaction should be called "CoinbaseTransaction" and that's a transaction with a single output (going to the miner)
     static createRewardTransaction(recipientAddress: string) {
-        return Transaction.transactionWithOutputs(Wallet.blockchainWallet(), [{amount: MINING_REWARD, address: recipientAddress}])
+        return Transaction.transactionWithOutputs(Wallet.getBlockchainWallet(), [{ amount: MINING_REWARD, address: recipientAddress }])
     }
 
     static transactionWithOutputs(senderWallet: Wallet, outputs: { amount: number; address: string; }[]) {
@@ -83,4 +87,28 @@ export class Transaction {
         return transaction;
     }
 
+}
+
+class Output {
+    amount: number;
+    address: string;
+
+    constructor(amount: number, address: string) {
+        this.amount = amount;
+        this.address = address;
+    }
+}
+
+class Input {
+    timestamp: number;
+    amount: number;
+    address: string;
+    signature: string;
+
+    constructor(timestamp: number, amount: number, address: string, signature: string) {
+        this.timestamp = timestamp;
+        this.amount = amount;
+        this.address = address;
+        this.signature = signature;
+    }
 }

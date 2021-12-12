@@ -24,7 +24,7 @@ describe('Wallet', () => {
           });
 
           it('doubles the `sendAmount` subtracted from the wallet balance', ()=> {
-              expect(transaction.outputs.find(output => output.address === wallet.publicKey).amount).toEqual(wallet.balance - sendAmount * 2);
+              expect(transaction.outputs.find(output => output.address === wallet.publicKey)?.amount).toEqual(wallet.balance - sendAmount * 2);
           });
 
           it('clones the `sendAmount` output for the recipient', ()=> {

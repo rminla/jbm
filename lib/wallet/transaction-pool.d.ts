@@ -5,4 +5,5 @@ export declare class TransactionPool {
     updateOrAddTransaction(transaction: Transaction): void;
     getTransaction(address: string): Transaction | undefined;
     getValidTransactions(): Transaction[];
+    clear(): void;
 }
